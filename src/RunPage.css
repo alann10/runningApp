@@ -1,0 +1,23 @@
+.run-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.run-stats {
+  background-color: #f0f0f0;
+  padding: 10px;
+  margin-top: 20px;
+  border-radius: 5px;
+}
+
+.error {
+  color: red;
+  font-weight: bold;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}

@@ -1,0 +1,50 @@
+.run-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.run-stats {
+  background-color: #f0f0f0;
+  padding: 10px;
+  margin-top: 20px;
+  border-radius: 5px;
+}
+
+.error {
+  color: red;
+  font-weight: bold;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.route-selection {
+  margin-top: 20px;
+}
+
+.route-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.route-option {
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.route-option:hover {
+  background-color: #f0f0f0;
+}
+
+input[type="number"] {
+  padding: 10px;
+  font-size: 16px;
+  margin-right: 10px;
+}

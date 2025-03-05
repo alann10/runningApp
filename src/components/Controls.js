@@ -1,15 +1,27 @@
 import React from 'react';
+import '../styles/Controls.css';
 
-function Controls({ isRunning, onStart, onStop }) {
+const Controls = ({ isRunning, onStart, onStop, isLoading }) => {
   return (
-    <div>
-      {isRunning ? (
-        <button onClick={onStop}>Stop Run</button>
+    <div className="controls">
+      {!isRunning ? (
+        <button 
+          className={`control-button start-button ${isLoading ? 'disabled' : ''}`}
+          onClick={onStart}
+          disabled={isLoading}
+        >
+          {isLoading ? 'Loading...' : 'Start'}
+        </button>
       ) : (
-        <button onClick={onStart}>Start Run</button>
+        <button 
+          className="control-button stop-button"
+          onClick={onStop}
+        >
+          Stop
+        </button>
       )}
     </div>
   );
-}
+};
 
 export default Controls;

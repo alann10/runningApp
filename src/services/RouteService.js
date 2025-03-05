@@ -30,10 +30,11 @@ const getPointAtDistance = (start, distanceKm, bearing) => {
   };
 };
 
+//need to experiment more with angleIncrement and numwaypoints! 
 const getCurvedWaypoints = (start, midpoint, numWaypoints = 5) => {
   const waypoints = [];
   const radius = 0.5; // Radius in miles for the arc
-  const angleIncrement = 180 / (numWaypoints - 1); // Angle increment for waypoints
+  const angleIncrement = 360 / (numWaypoints - 1); // Angle increment for waypoints
 
   for (let i = 0; i < numWaypoints; i++) {
     const angle = angleIncrement * i; // Calculate angle for each waypoint
@@ -113,22 +114,89 @@ const generateExactRoute = async (start, desiredDistance, variation = 0) => {
 //   }));
 // };
 
-export const generateRoutes = async (start, desiredDistance) => {
-  const routes = [];
-  
-  // Generate two distinct routes
-  for (let i = 0; i < 2; i++) {
-    const route = await generateExactRoute(start, desiredDistance);
-    if (!route) {
-      throw new Error(`Unable to generate a route matching ${desiredDistance} miles. Please try a different distance or location.`);
+export const generateRoutes = async (location, desiredDistance) => {
+  try {
+    const routes = [];
+    
+    // Generate two distinct routes
+    for (let i = 0; i < 2; i++) {
+      const route = await generateExactRoute(location, desiredDistance);
+      if (!route) {
+        throw new Error(`Unable to generate a route matching ${desiredDistance} miles. Please try a different distance or location.`);
+      }
+      routes.push(route);
     }
-    routes.push(route);
-  }
 
-  // Ensure routes are distinct (you can implement more sophisticated logic here)
-  if (routes[0].geometry.coordinates.toString() === routes[1].geometry.coordinates.toString()) {
-    throw new Error('Generated routes are not distinct. Please try again.');
-  }
+    // Ensure routes are distinct (you can implement more sophisticated logic here)
+    if (routes[0].geometry.coordinates.toString() === routes[1].geometry.coordinates.toString()) {
+      throw new Error('Generated routes are not distinct. Please try again.');
+    }
 
-  return routes; // Return the valid routes in an array
+    // Generate basic instructions for each route
+    const routesWithInstructions = routes.map(route => {
+      const coordinates = route.geometry.coordinates;
+      const instructions = generateBasicInstructions(coordinates);
+      
+      return {
+        ...route,
+        properties: {
+          ...route.properties,
+          instructions: instructions
+        }
+      };
+    });
+
+    return routesWithInstructions;
+  } catch (error) {
+    console.error('Error generating routes:', error);
+    throw error;
+  }
 };
+
+// Helper function to generate basic instructions from coordinates
+const generateBasicInstructions = (coordinates) => {
+  if (!coordinates || coordinates.length < 2) return [];
+
+  const instructions = [];
+  
+  // Add starting instruction
+  instructions.push("Start your run");
+
+  // Generate turn instructions based on coordinate changes
+  for (let i = 1; i < coordinates.length - 1; i++) {
+    const prev = coordinates[i - 1];
+    const curr = coordinates[i];
+    const next = coordinates[i + 1];
+
+    const angle = calculateTurnAngle(prev, curr, next);
+    if (Math.abs(angle) > 30) {
+      const direction = angle > 0 ? "right" : "left";
+      instructions.push(`Turn ${direction} at the next intersection`);
+    }
+  }
+
+  // Add final instruction
+  instructions.push("You have reached your destination");
+
+  return instructions;
+};
+
+// Helper function to calculate turn angle
+const calculateTurnAngle = (point1, point2, point3) => {
+  const [x1, y1] = point1;
+  const [x2, y2] = point2;
+  const [x3, y3] = point3;
+
+  // Calculate vectors
+  const vector1 = [x2 - x1, y2 - y1];
+  const vector2 = [x3 - x2, y3 - y2];
+
+  // Calculate angle between vectors
+  const angle = Math.atan2(
+    vector1[0] * vector2[1] - vector1[1] * vector2[0],
+    vector1[0] * vector2[0] + vector1[1] * vector2[1]
+  );
+
+  return angle * (180 / Math.PI);
+};
+

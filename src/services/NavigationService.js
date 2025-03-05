@@ -1,16 +1,92 @@
 // import { CONFIG } from '../config'; // Import the CONFIG object
 
-// export const getDirections = async (route) => {
-//   const start = [route.start.longitude, route.start.latitude]; // Ensure start is in the correct format
-//   const end = [route.end.longitude, route.end.latitude]; // Ensure end is in the correct format
-//   const profile = 'mapbox/walking'; // Change to your desired profile
-//   const accessToken = CONFIG.MAPBOX_ACCESS_TOKEN; // Use the access token from config
+export const getDirections = async (route) => {
+  try {
+    console.log('Route received in getDirections:', route);
 
-//   const response = await fetch(`https://api.mapbox.com/directions/v5/${profile}/${start[0]},${start[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=${accessToken}`);
+    // If route already has non-empty instructions, use them
+    if (route.properties?.instructions?.length > 0) {
+      console.log('Using existing route instructions:', route.properties.instructions);
+      return {
+        routes: [{
+          legs: [{
+            steps: route.properties.instructions.map(instruction => ({
+              maneuver: { instruction }
+            }))
+          }]
+        }]
+      };
+    }
+
+    // If no instructions or empty, generate them from coordinates
+    const coordinates = route.geometry.type === 'MultiLineString' 
+      ? route.geometry.coordinates[0]  // Get the first line string from MultiLineString
+      : route.geometry.coordinates;
+
+    if (!coordinates || coordinates.length < 2) {
+      throw new Error('Invalid route coordinates');
+    }
+
+    // Generate basic instructions from coordinates
+    const instructions = generateBasicInstructions(coordinates);
+    
+    return {
+      routes: [{
+        legs: [{
+          steps: instructions.map(instruction => ({
+            maneuver: { instruction }
+          }))
+        }]
+      }]
+    };
+
+  } catch (error) {
+    console.error('Detailed error in getDirections:', error);
+    throw error;
+  }
+};
+
+const generateBasicInstructions = (coordinates) => {
+  if (!coordinates || coordinates.length < 2) return [];
+
+  const instructions = [];
   
-//   if (!response.ok) {
-//     throw new Error('Failed to fetch directions');
-//   }
-  
-//   return response.json();
-// };
+  // Add starting instruction
+  instructions.push("Start your run");
+
+  // Generate turn instructions based on coordinate changes
+  for (let i = 1; i < coordinates.length - 1; i++) {
+    const prev = coordinates[i - 1];
+    const curr = coordinates[i];
+    const next = coordinates[i + 1];
+
+    const angle = calculateTurnAngle(prev, curr, next);
+    if (Math.abs(angle) > 30) {
+      const direction = angle > 0 ? "right" : "left";
+      instructions.push(`Turn ${direction} at the next intersection`);
+    }
+  }
+
+  // Add final instruction
+  instructions.push("You have reached your destination");
+
+  return instructions;
+};
+
+const calculateTurnAngle = (point1, point2, point3) => {
+  const [x1, y1] = point1;
+  const [x2, y2] = point2;
+  const [x3, y3] = point3;
+
+  // Calculate vectors
+  const vector1 = [x2 - x1, y2 - y1];
+  const vector2 = [x3 - x2, y3 - y2];
+
+  // Calculate angle between vectors
+  const angle = Math.atan2(
+    vector1[0] * vector2[1] - vector1[1] * vector2[0],
+    vector1[0] * vector2[0] + vector1[1] * vector2[1]
+  );
+
+  return angle * (180 / Math.PI);
+};

@@ -10,7 +10,10 @@ import { useRunStats } from '../hooks/useRunStats';
 import { generateRoutes } from '../services/RouteService';
 import { saveRun } from '../services/RunService';
 import { getDirections } from '../services/NavigationService';
+import RunNavigationView from '../components/RunNavigationView';
 import '../styles/RunPage.css';
+import { useFirebase } from '../contexts/FirebaseContext';
+import { saveRunToFirebase } from '../services/FirebaseService';
 
 const RunPage = () => {
   const location = useLocation();
@@ -25,6 +28,7 @@ const RunPage = () => {
   const [instructions, setInstructions] = useState([]);
   const stats = useRunStats(isRunning, location);
   const [isLoadingDirections, setIsLoadingDirections] = useState(false);
+  const { auth } = useFirebase();
 
   useEffect(() => {
     const generateInitialRoutes = async () => {
@@ -101,13 +105,18 @@ const RunPage = () => {
     setIsRunning(false);
     if (stats.distance >= selectedRoute.distance) {
       setIsCompleted(true);
-    } else {
-      try {
-        await saveRun({ ...stats, route: selectedRoute });
-        setError(null);
-      } catch (err) {
-        setError('Failed to save run data. Please try again.');
-      }
+    }
+    
+    try {
+      await saveRunToFirebase({
+        userId: auth.currentUser?.uid,
+        route: selectedRoute,
+        stats: stats,
+        completedAt: new Date().toISOString()
+      });
+      setError(null);
+    } catch (err) {
+      setError('Failed to save run data. Please try again.');
     }
   };
 
@@ -118,6 +127,18 @@ const RunPage = () => {
 
   if (isCompleted) {
     return <CompletionScreen distance={selectedRoute.distance} />;
+  }
+
+  if (isRunning && selectedRoute) {
+    return (
+      <RunNavigationView
+        route={selectedRoute}
+        location={location}
+        instructions={instructions}
+        stats={stats}
+        onStop={handleStopRun}
+      />
+    );
   }
 
   return (

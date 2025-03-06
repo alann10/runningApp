@@ -1,0 +1,229 @@
+.profile-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.profile-header {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.profile-info {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.profile-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-name {
+  font-size: 2rem;
+  color: #333;
+  margin: 0;
+}
+
+.bio-section {
+  max-width: 600px;
+}
+
+.bio-display {
+  cursor: pointer;
+  padding: 1rem;
+  border-radius: 8px;
+  background: #f8f9fa;
+  transition: background-color 0.2s;
+}
+
+.bio-display:hover {
+  background: #e9ecef;
+}
+
+.bio-edit textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 0.75rem;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  resize: vertical;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.stat-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.stat-card h3 {
+  color: #666;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 0.5rem 0;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.routes-section {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.routes-section h2 {
+  margin: 0 0 1.5rem 0;
+  color: #333;
+}
+
+.routes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.route-card {
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.route-preview {
+  height: 150px;
+  background: #f8f9fa;
+}
+
+.route-info {
+  padding: 1rem;
+}
+
+.route-info h3 {
+  margin: 0 0 0.5rem 0;
+  color: #333;
+}
+
+.route-info p {
+  margin: 0 0 1rem 0;
+  color: #666;
+}
+
+.route-stats {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* Add these new styles */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  color: #666;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-banner {
+  background-color: #fee;
+  color: #c33;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.error-banner button {
+  background: #fff;
+  border: 1px solid #c33;
+  color: #c33;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.error-banner button:hover {
+  background: #c33;
+  color: #fff;
+}
+
+.bio-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+.cancel-button {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  color: #666;
+}
+
+.save-button {
+  background: #007bff;
+  border: 1px solid #0056b3;
+  color: white;
+}
+
+.cancel-button,
+.save-button {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancel-button:hover {
+  background: #e9ecef;
+}
+
+.save-button:hover {
+  background: #0056b3;
+}
+
+.cancel-button:disabled,
+.save-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+} 
